@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hm_shop/pages/Cart/cart.dart';
+import 'package:hm_shop/pages/Category/category.dart';
+import 'package:hm_shop/pages/Home/home.dart';
+import 'package:hm_shop/pages/Mine/mine.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -28,6 +32,11 @@ class _MainPageState extends State<MainPage> {
   }
   //当前选中的index
   int _currentIndex=0;
+
+  List<Widget> _getChildren(){
+    return [HomeView(),CategoryView(),CartView(),MineView()];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,8 +47,10 @@ class _MainPageState extends State<MainPage> {
         ),
 //页面内容
         body: SafeArea(
-          child: IndexedStack(
-            children: [],
+          //安全区域
+          child: IndexedStack(//索引栈
+            index: _currentIndex,
+            children: _getChildren(),
           ),
         ),
 //底部导航栏
