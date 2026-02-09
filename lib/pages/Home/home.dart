@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hm_shop/api/home.dart';
 import 'package:hm_shop/components/Home/HmCategory.dart';
 import 'package:hm_shop/components/Home/HmHot.dart';
 import 'package:hm_shop/components/Home/HmMoreList.dart';
@@ -16,10 +17,11 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   // 轮播图数据
-  final List<BannerItem> _bannerList = [
-    BannerItem(id: '1', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/1.png'),
-    BannerItem(id: '2', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/2.png'),
-    BannerItem(id: '3', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/3.png'),
+  List<BannerItem> _bannerList = 
+  [
+    // BannerItem(id: '1', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/1.png'),
+    // BannerItem(id: '2', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/2.png'),
+    // BannerItem(id: '3', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/3.png'),
   ];
   // 首页滚动列表
   List<Widget> _getScrollChildern(){
@@ -49,7 +51,18 @@ class _HomeViewState extends State<HomeView> {
     ];
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getBannderList();
+  }
 
+  void _getBannderList()async{
+    _bannerList =  await getBannerListAPI();
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
