@@ -31,6 +31,19 @@ class _HomeViewState extends State<HomeView> {
     title: '',
     subTypes: [],
   );
+
+    // 热榜推荐
+  SpecialOfferResult _inVogueResult = SpecialOfferResult(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  // 一站式推荐
+  SpecialOfferResult _oneStopResult = SpecialOfferResult(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
   // 首页滚动列表
   List<Widget> _getScrollChildern(){
     return [
@@ -47,9 +60,13 @@ class _HomeViewState extends State<HomeView> {
           (
             direction: Axis.horizontal,children: 
             [
-              Expanded(child: HmHot()),
-              SizedBox(width: 10.0),
-              Expanded(child: HmHot())
+              Expanded(
+                child: HmHot(result: _inVogueResult, type: "hot"),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: HmHot(result: _oneStopResult, type: "step"),
+              ),
             ]
           ),//更多组件
         )
@@ -59,6 +76,8 @@ class _HomeViewState extends State<HomeView> {
     ];
   }
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -66,6 +85,8 @@ class _HomeViewState extends State<HomeView> {
     _getBannderList();
     _getCategoryList();
     _getSpecialOfferList();
+    _getInVogueList();
+    _getOneStopList();
   }
 
   // 获取轮播图列表
@@ -85,6 +106,20 @@ class _HomeViewState extends State<HomeView> {
     _specialOfferList =  await getSpecialOfferListAPI();
     setState(() {
     });
+  }
+
+
+
+// 获取热榜推荐列表
+  void _getInVogueList() async {
+    _inVogueResult = await getInVogueListAPI();
+    setState(() {});
+  }
+
+  // 获取一站式推荐列表
+  void _getOneStopList() async {
+    _oneStopResult = await getOneStopListAPI();
+    setState(() {});
   }
 
 

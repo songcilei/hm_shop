@@ -11,6 +11,8 @@ class HttpConstants{
   static const String CATEGORY_LIST = "/home/category/head";//请求头-内容类别
   // 帮我 特惠推荐地址/hot/preference 
   static const String PRODUCT_LIST = "/hot/preference";//请求头-特惠推荐
+  static const String IN_VOGUE_LIST = "/hot/inVogue"; // 热榜推荐地址
+  static const String ONE_STOP_LIST = "/hot/oneStop"; // 一站式推荐地址
 
 }
 
