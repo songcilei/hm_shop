@@ -88,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
     _getInVogueList();
     _getOneStopList();
     _getRecommendList();
-
+    _registerEvent();
   }
 
   // 获取轮播图列表
@@ -127,11 +127,48 @@ class _HomeViewState extends State<HomeView> {
 // 推荐列表
   List<GoodDetailItem> _recommendList = [];
 
+
+  //页码 
+  int _page = 1;
+  //当前是不是正在加载
+  bool _isLoading = false;
+  //是否还有下一页
+  bool _hasMore = true;
+
   // 获取推荐列表
   void _getRecommendList() async {
-    _recommendList = await getRecommendListAPI({"limit": 10});
+    //判断是否正在加载中 或者 是否还有下一页
+    if(_isLoading || !_hasMore){
+      return;
+    }
+    _isLoading = true;
+    int requestLimit = _page*8;
+    _recommendList = await getRecommendListAPI({"limit": requestLimit});
+    _isLoading = false;
+
     setState(() {});
+    //判断是否还有下一页
+    if(_recommendList.length < 10){
+      _hasMore = false;
+      return;
+    }
+    _page++;
   }
+
+  //监听滚动到底部的事件
+  void _registerEvent(){
+    _controller.addListener(() {
+      //_controller.position.pixels  当前滚动的距离
+      //_controller.position.maxScrollExtent  最大滚动距离
+      if(_controller.position.pixels >= _controller.position.maxScrollExtent-50){
+        print("滚动到底部了");
+      }
+      // print("滚动了${_controller.position.pixels}");
+    });
+  }
+
+  // 滚动控制器
+  ScrollController _controller = ScrollController();
 
 
 
@@ -139,7 +176,9 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Container(
        child: CustomScrollView(
-         slivers: _getScrollChildern(),
+          controller: _controller,
+          // 滚动列表
+          slivers: _getScrollChildern(),
        ),
     );
   }
