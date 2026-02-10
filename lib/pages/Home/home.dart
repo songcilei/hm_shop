@@ -9,7 +9,7 @@ import 'package:hm_shop/components/Home/HmSuggestion.dart';
 import 'package:hm_shop/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
-  HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   _HomeViewState createState() => _HomeViewState();
@@ -23,13 +23,15 @@ class _HomeViewState extends State<HomeView> {
     // BannerItem(id: '2', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/2.png'),
     // BannerItem(id: '3', imgUrl: 'https://env-00jxufh206k1.normal.cloudstatic.cn/Test/3.png'),
   ];
+  // 分类列表
+  List<CategoryItem> _categoryList = [];
   // 首页滚动列表
   List<Widget> _getScrollChildern(){
     return [
       SliverToBoxAdapter(child: HmSlider(bannerList: _bannerList)),//轮播图组件
       SliverToBoxAdapter(child: SizedBox(height: 10.0,),),//间距组件
       //SliverGrid和SliverList只能纵向排列 不能横向排列
-      SliverToBoxAdapter(child: HmCategory()),//分类组件
+      SliverToBoxAdapter(child: HmCategory(categoryList: _categoryList)),//分类组件
       SliverToBoxAdapter(child: SizedBox(height: 10.0,),),//间距组件
       SliverToBoxAdapter(child: HmSuggestion()),//推荐组件
       SliverToBoxAdapter(child: SizedBox(height: 10.0,),),//间距组件
@@ -56,13 +58,23 @@ class _HomeViewState extends State<HomeView> {
     // TODO: implement initState
     super.initState();
     _getBannderList();
+    _getCategoryList();
   }
 
+  // 获取轮播图列表
   void _getBannderList()async{
     _bannerList =  await getBannerListAPI();
     setState(() {
     });
   }
+  // 获取分类列表
+  void _getCategoryList()async{
+    _categoryList =  await getCategoryListAPI();
+    setState(() {
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

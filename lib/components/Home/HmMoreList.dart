@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 class HmMoreList extends StatefulWidget {
-  HmMoreList({Key? key}) : super(key: key);
+  const HmMoreList({super.key});
 
   @override
   _HmMoreListState createState() => _HmMoreListState();

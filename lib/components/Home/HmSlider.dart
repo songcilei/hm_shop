@@ -4,7 +4,7 @@ import 'package:hm_shop/viewmodels/home.dart';
 class HmSlider extends StatefulWidget {
   final List<BannerItem> bannerList;
 
-  HmSlider({Key? key,required this.bannerList}) : super(key: key);
+  const HmSlider({super.key,required this.bannerList});
 
   @override
   _HmSliderState createState() => _HmSliderState();

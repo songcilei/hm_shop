@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class MineView extends StatefulWidget {
-  MineView({Key? key}) : super(key: key);
+  const MineView({super.key});
 
   @override
   _MineViewState createState() => _MineViewState();

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class CartView extends StatefulWidget {
-  CartView({Key? key}) : super(key: key);
+  const CartView({super.key});
 
   @override
   _CartViewState createState() => _CartViewState();

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class CategoryView extends StatefulWidget {
-  CategoryView({Key? key}) : super(key: key);
+  const CategoryView({super.key});
 
   @override
   _CategoryViewState createState() => _CategoryViewState();

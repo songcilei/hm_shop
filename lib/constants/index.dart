@@ -8,6 +8,7 @@ class GlobalConstants{
 //http常量
 class HttpConstants{
   static const String BANNER_LIST = "/home/banner";//请求头-内容类型
+  static const String CATEGORY_LIST = "/home/category/head";//请求头-内容类别
 }
 
 
