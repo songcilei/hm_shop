@@ -25,6 +25,12 @@ class _HomeViewState extends State<HomeView> {
   ];
   // 分类列表
   List<CategoryItem> _categoryList = [];
+  // 特惠推荐列表
+  SpecialOfferResult? _specialOfferList = SpecialOfferResult(
+    id: '',
+    title: '',
+    subTypes: [],
+  );
   // 首页滚动列表
   List<Widget> _getScrollChildern(){
     return [
@@ -33,7 +39,7 @@ class _HomeViewState extends State<HomeView> {
       //SliverGrid和SliverList只能纵向排列 不能横向排列
       SliverToBoxAdapter(child: HmCategory(categoryList: _categoryList)),//分类组件
       SliverToBoxAdapter(child: SizedBox(height: 10.0,),),//间距组件
-      SliverToBoxAdapter(child: HmSuggestion()),//推荐组件
+      SliverToBoxAdapter(child: HmSuggestion(specialOfferList:_specialOfferList!)),//推荐组件
       SliverToBoxAdapter(child: SizedBox(height: 10.0,),),//间距组件
       SliverToBoxAdapter(child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10),//top和bottom间距为10
@@ -59,6 +65,7 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     _getBannderList();
     _getCategoryList();
+    _getSpecialOfferList();
   }
 
   // 获取轮播图列表
@@ -70,6 +77,12 @@ class _HomeViewState extends State<HomeView> {
   // 获取分类列表
   void _getCategoryList()async{
     _categoryList =  await getCategoryListAPI();
+    setState(() {
+    });
+  }
+  // 获取特惠推荐列表
+  void _getSpecialOfferList()async{
+    _specialOfferList =  await getSpecialOfferListAPI();
     setState(() {
     });
   }

@@ -53,8 +53,8 @@ class Diorequest {
   //进一步处理返回结果
   Future<dynamic> _handleResponse(Future<Response<dynamic>> task)async{
     try{
-      Response<dynamic> res = await task;
-      final data = res.data as Map<String,dynamic>;
+      Response<dynamic> res = await task;//result
+      final data = res.data as Map<String,dynamic>;//result data
       if(data['code'] != GlobalConstants.SUCCESS_CODE){
         throw DioException(requestOptions: res.requestOptions);//抛出网路异常
       }
