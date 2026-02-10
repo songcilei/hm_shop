@@ -148,10 +148,11 @@ class _HomeViewState extends State<HomeView> {
 
     setState(() {});
     //判断是否还有下一页
-    if(_recommendList.length < 10){
+    if(_recommendList.length < requestLimit){
       _hasMore = false;
       return;
     }
+    print("page++ $_page");
     _page++;
   }
 
@@ -162,6 +163,7 @@ class _HomeViewState extends State<HomeView> {
       //_controller.position.maxScrollExtent  最大滚动距离
       if(_controller.position.pixels >= _controller.position.maxScrollExtent-50){
         print("滚动到底部了");
+        _getRecommendList();
       }
       // print("滚动了${_controller.position.pixels}");
     });
