@@ -45,3 +45,16 @@ Future<SpecialOfferResult> getOneStopListAPI() async {
     await dioRequest.get(HttpConstants.ONE_STOP_LIST,null),
   );
 }
+
+// 推荐列表
+Future<List<GoodDetailItem>> getRecommendListAPI(
+  Map<String, dynamic> params,
+) async {
+  // 返回请求
+  return ((await dioRequest.get(HttpConstants.RECOMMEND_LIST,params))
+          as List)
+      .map((item) {
+        return GoodDetailItem.formJSON(item as Map<String, dynamic>);
+      })
+      .toList();
+}
