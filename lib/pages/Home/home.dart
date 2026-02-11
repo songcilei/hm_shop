@@ -6,6 +6,7 @@ import 'package:hm_shop/components/Home/HmHot.dart';
 import 'package:hm_shop/components/Home/HmMoreList.dart';
 import 'package:hm_shop/components/Home/HmSlider.dart';
 import 'package:hm_shop/components/Home/HmSuggestion.dart';
+import 'package:hm_shop/utils/ToastUtils.dart';
 import 'package:hm_shop/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
@@ -82,46 +83,47 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getBannderList();
-    _getCategoryList();
-    _getSpecialOfferList();
-    _getInVogueList();
-    _getOneStopList();
-    _getRecommendList();
+    // _getBannderList();
+    // _getCategoryList();
+    // _getSpecialOfferList();
+    // _getInVogueList();
+    // _getOneStopList();
+    // _getRecommendList();
+    Future.microtask(() {//因为执行的时机需要在构建完组件之后 所以需要用微任务在build完之后调用
+      _key.currentState?.show();//通过key 去操控RefreshIndicator组件
+      _topPadding = 100;//这个是为了动画
+    });
     _registerEvent();
   }
+  //initState > build > 下拉刷新 > 才可以操作
+  //Furture.micoTask 微任务
 
   // 获取轮播图列表
-  void _getBannderList()async{
+  Future<void> _getBannderList()async{
     _bannerList =  await getBannerListAPI();
-    setState(() {
-    });
+
   }
   // 获取分类列表
-  void _getCategoryList()async{
+  Future<void> _getCategoryList()async{
     _categoryList =  await getCategoryListAPI();
-    setState(() {
-    });
+
   }
   // 获取特惠推荐列表
-  void _getSpecialOfferList()async{
+  Future<void> _getSpecialOfferList()async{
     _specialOfferList =  await getSpecialOfferListAPI();
-    setState(() {
-    });
+
   }
 
 
 
 // 获取热榜推荐列表
-  void _getInVogueList() async {
+  Future<void> _getInVogueList() async {
     _inVogueResult = await getInVogueListAPI();
-    setState(() {});
   }
 
   // 获取一站式推荐列表
-  void _getOneStopList() async {
+  Future<void> _getOneStopList() async {
     _oneStopResult = await getOneStopListAPI();
-    setState(() {});
   }
 
 // 推荐列表
@@ -136,7 +138,7 @@ class _HomeViewState extends State<HomeView> {
   bool _hasMore = true;
 
   // 获取推荐列表
-  void _getRecommendList() async {
+  Future<void> _getRecommendList() async {
     //判断是否正在加载中 或者 是否还有下一页
     if(_isLoading || !_hasMore){
       return;
@@ -158,7 +160,7 @@ class _HomeViewState extends State<HomeView> {
 
   //监听滚动到底部的事件
   void _registerEvent(){
-    _controller.addListener(() {
+    _controller.addListener(() {//添加侦听器
       //_controller.position.pixels  当前滚动的距离
       //_controller.position.maxScrollExtent  最大滚动距离
       if(_controller.position.pixels >= _controller.position.maxScrollExtent-50){
@@ -172,16 +174,45 @@ class _HomeViewState extends State<HomeView> {
   // 滚动控制器
   ScrollController _controller = ScrollController();
 
+  // 下拉刷新
+  Future<void> _onRefresh()async{
+    _page =1;
+    _hasMore = true;
+    _isLoading = false;
+    await _getBannderList();
+    await _getCategoryList();
+    await _getSpecialOfferList();
+    await _getInVogueList();
+    await _getOneStopList();
+    await _getRecommendList();
+    setState(() {
+    });
+    ToastUtils.showToast(context, "下拉刷新成功");
+    _topPadding=0;
+    // print("下拉刷新成功");
+  }
 
 
+  //GlobalKey 时一个方法 可以创建一个key  绑定到widget 部件里 可以操作Widget 部件
+  final GlobalKey<RefreshIndicatorState> _key = GlobalKey<RefreshIndicatorState>();
+
+  double _topPadding = 0;
   @override
   Widget build(BuildContext context) {
-    return Container(
-       child: CustomScrollView(
-          controller: _controller,
-          // 滚动列表
-          slivers: _getScrollChildern(),
-       ),
-    );
+    return RefreshIndicator(//下拉刷新组件
+      key: _key,
+      onRefresh: _onRefresh,//函数绑定到事件上 没有小括号
+      child: AnimatedContainer(//很无聊的效果 每次刷新场景 会自动下拉并回弹
+          duration: Duration(milliseconds: 300),
+          padding: EdgeInsets.only(top: _topPadding),
+          child:Container(
+            child: CustomScrollView(
+                controller: _controller,
+                // 滚动列表
+                slivers: _getScrollChildern(),
+            ),
+          ),
+        ),
+      );
   }
 }
