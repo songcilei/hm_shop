@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/state_manager.dart';
 import 'package:hm_shop/api/mine.dart';
 import 'package:hm_shop/components/Home/HmMoreList.dart';
 import 'package:hm_shop/components/Mine/HmGuess.dart';
+import 'package:hm_shop/stores/UserController.dart';
 import 'package:hm_shop/viewmodels/home.dart';
 
 class MineView extends StatefulWidget {
-  MineView({Key? key}) : super(key: key);
+  const MineView({super.key});
 
   @override
   _MineViewState createState() => _MineViewState();
 }
 
 class _MineViewState extends State<MineView> {
+  final UserController _userController = Get.put(UserController()); //Get 共享数据 Put 
+
   Widget _buildHeader() {
     return Container(
       decoration: BoxDecoration(
@@ -24,25 +30,39 @@ class _MineViewState extends State<MineView> {
       padding: const EdgeInsets.only(left: 20, right: 40, top: 80, bottom: 20),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundImage: const AssetImage('lib/assets/goods_avatar.png'),
-            backgroundColor: Colors.white,
-          ),
+          Obx((){
+            return CircleAvatar(
+              radius: 26,
+              backgroundImage:_userController.user.value.id.isEmpty?NetworkImage(_userController.user.value.avatar) : const AssetImage('lib/assets/goods_avatar.png'),
+              backgroundColor: Colors.white,
+            );
+          }),
+
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, "/login");
-                    print("denglu");
-                  },
-                  child:Text('立即登录',style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                )
-
+                Obx(() {
+                  //OBX中必须得有可检测的响应式数据
+                  return GestureDetector(
+                    onTap: () {
+                      if(_userController.user.value.id.isEmpty){
+                        //当没有用户登录信息的时候可以去登录
+                        Navigator.pushNamed(context, "/login");
+                      }
+                      print("denglu");
+                    },
+                    child: Text(
+                      //当有登录信息时显示 无则显示立即登录 响应式变量
+                      _userController.user.value.id.isEmpty?_userController.user.value.account:'立即登录',//有登录信息 显示用户信息 否则显示立即登录
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -178,9 +198,9 @@ class _MineViewState extends State<MineView> {
     );
   }
 
-  List<GoodDetailItem> _list = [];
+  final List<GoodDetailItem> _list = [];
   //分页的请求参数
-  Map<String, dynamic> _params = {"page": 1, "pageSize": 10};
+  final Map<String, dynamic> _params = {"page": 1, "pageSize": 10};
   @override
   void initState() {
     super.initState();
@@ -199,9 +219,11 @@ class _MineViewState extends State<MineView> {
     _isLoading = true;
     final res = await getGuessListAPI(_params);
     _isLoading = false;
-    _list.addAll(res.items!);//这里用add 是因为 每次请求 会获得不同的东西 然后每次都是10个 只有用add 才能无限刷新 这个不i是个长列表
+    _list.addAll(
+      res.items!,
+    ); //这里用add 是因为 每次请求 会获得不同的东西 然后每次都是10个 只有用add 才能无限刷新 这个不i是个长列表
     // _list = res.items!;//这里不能赋值
-    if (_params["page"]>res.pages) {
+    if (_params["page"] > res.pages) {
       _hasMore = false;
     }
     _params["page"] += 1;
@@ -213,7 +235,8 @@ class _MineViewState extends State<MineView> {
   void _registerEvent() async {
     //触底加载
     _controller.addListener(() {
-      if (_controller.position.pixels >= _controller.position.maxScrollExtent-50) {
+      if (_controller.position.pixels >=
+          _controller.position.maxScrollExtent - 50) {
         print("滚动到底部了");
         _getGuessList();
       }

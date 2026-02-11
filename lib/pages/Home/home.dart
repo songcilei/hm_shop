@@ -172,7 +172,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // 滚动控制器
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
 
   // 下拉刷新
   Future<void> _onRefresh()async{

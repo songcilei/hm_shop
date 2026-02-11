@@ -1,18 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hm_shop/api/user.dart';
+import 'package:hm_shop/stores/UserController.dart';
 import 'package:hm_shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _phoneController = TextEditingController(); // 账号控制器
-  TextEditingController _codeController = TextEditingController(); // 密码控制器
+  final TextEditingController _phoneController = TextEditingController(); // 账号控制器
+  final TextEditingController _codeController = TextEditingController(); // 密码控制器
+
+  final UserController _userController = Get.find();
+
   // 用户账号Widget
   Widget _buildPhoneTextField() {
     return TextFormField(
@@ -24,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
         if(!RegExp(r"^1[3-9]\d{9}$").hasMatch(value)){
           return "手机号格式不正确";
         }
+        return null;
       },
       controller: _phoneController,
       decoration: InputDecoration(
@@ -50,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         if(!RegExp(r"^[a-zA-Z0-9_]{6,9}$").hasMatch(value)){
           return "密码格式不对";
         }
+        return null;
       },
       controller: _codeController,
       obscureText: true,
@@ -66,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _login()async{
+  Future<void> _login()async{
     //调用登录接口
     try{
       final res = await loginAPI({
@@ -75,16 +82,13 @@ class _LoginPageState extends State<LoginPage> {
       });
     //此时一定登陆成功
     //http状态 2xx 业务状态码  业务执行成功
-      print(res);
+      _userController.updateUserInfo(res);
+      ToastUtils.showToast(context, "登陆成功");
       Navigator.pop(context);//返回上个页面
     }
     catch(e){
       ToastUtils.showToast(context, (e as DioException).message);
     }
-
-
-
-
   }
 
   // 登录按钮Widget
