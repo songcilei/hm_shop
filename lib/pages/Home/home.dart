@@ -158,7 +158,7 @@ class _HomeViewState extends State<HomeView> {
     _page++;
   }
 
-  //监听滚动到底部的事件
+  //监听滚动到底部的事件  触底更新
   void _registerEvent(){
     _controller.addListener(() {//添加侦听器
       //_controller.position.pixels  当前滚动的距离

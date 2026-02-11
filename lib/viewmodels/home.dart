@@ -95,6 +95,7 @@ class SpecialOfferSubType {
   }
 }
 
+//goodsItems类型
 class SpecialOfferGoodsItems {
   int? counts;
   int? pageSize;
@@ -154,7 +155,7 @@ class SpecialOfferGoodsItem {
     );
   }
 }
-
+//更多商品列表
 class GoodDetailItem extends SpecialOfferGoodsItem {
   int payCount = 0;
   /// 商品详情项
@@ -178,3 +179,41 @@ class GoodDetailItem extends SpecialOfferGoodsItem {
     );
   }
 }
+
+/////------------------覆写？？
+///
+///
+/////goodsItems类型
+class GoodsDetailsItems {
+  int? counts;
+  int? pageSize;
+  int? pages;
+  int? page;
+  List<GoodDetailItem>? items;
+  GoodsDetailsItems({
+    required this.counts,
+    required this.pageSize,
+    required this.pages,
+    required this.page,
+    required this.items,
+  });
+
+//复制 SpecialOfferGoodsItems 并 改名
+  factory GoodsDetailsItems.fromJson(Map<String, dynamic> json) {
+    return GoodsDetailsItems(
+      counts: json['counts'] ?? 0,
+      pageSize: json['pageSize'] ?? 0,
+      pages: json['pages'] ?? 0,
+      page: json['page'] ?? 0,
+      items:
+          (json['items'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    GoodDetailItem.formJSON(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+    );
+  }
+}
+
