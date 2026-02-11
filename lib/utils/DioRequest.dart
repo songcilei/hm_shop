@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:hm_shop/constants/index.dart';
 
@@ -38,12 +40,23 @@ class Diorequest {
       //错误拦截器
       onError: (error,handle){
         //对错误进行处理
-        handle.next(error);
+        // handle.next(error);
+        handle.reject(
+          DioException(
+            requestOptions: error.requestOptions,
+            message: error.response?.data["msg"]??"")
+          );
       },
     ));
   }
   Future<dynamic> get(String url,Map<String,dynamic>? params){
     return _handleResponse(_dio.get(url,queryParameters: params));
+  }
+
+
+  //定义post接口
+  Future<dynamic> post(String url,{Map<String,dynamic>? data}){
+    return _handleResponse(_dio.post(url,data: data));
   }
 
 
@@ -55,12 +68,17 @@ class Diorequest {
     try{
       Response<dynamic> res = await task;//result
       final data = res.data as Map<String,dynamic>;//result data
-      if(data['code'] != GlobalConstants.SUCCESS_CODE){
-        throw DioException(requestOptions: res.requestOptions);//抛出网路异常
+      if(data['code'] == GlobalConstants.SUCCESS_CODE){
+        return data['result']; //成功则返回结果
+        
       }
-      return data['result']; //成功则返回结果
+      throw DioException(//如果有问题 则抛出 Dio异常
+        requestOptions: res.requestOptions,
+        message: data["msg"]??""
+      );
     }catch(e){
-      throw Exception(e);//抛出异常
+      // throw Exception(e);//抛出异常  这个会覆盖dio 异常 所以取消掉
+      rethrow;//不改变原来抛出的异常的 类型
     }
   }
 }

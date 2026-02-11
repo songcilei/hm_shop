@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hm_shop/api/user.dart';
 import 'package:hm_shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -64,6 +66,27 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  _login()async{
+    //调用登录接口
+    try{
+      final res = await loginAPI({
+        "account":_phoneController.text,
+        "password":_codeController.text
+      });
+    //此时一定登陆成功
+    //http状态 2xx 业务状态码  业务执行成功
+      print(res);
+      Navigator.pop(context);//返回上个页面
+    }
+    catch(e){
+      ToastUtils.showToast(context, (e as DioException).message);
+    }
+
+
+
+
+  }
+
   // 登录按钮Widget
   Widget _buildLoginButton() {
     return SizedBox(
@@ -75,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
           if(_key.currentState!.validate()){//通过这里调用每个Texture form的校验功能 而不是特殊写的
             if(_isChecked){//进行勾选框判断
               //校验通过 
+              _login();
             }else{
               //请勾选用户协议
               ToastUtils.showToast(context, "请勾选用户协议");
