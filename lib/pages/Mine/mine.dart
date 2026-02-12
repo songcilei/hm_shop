@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:hm_shop/api/mine.dart';
+// import 'package:get/get.dart';
 import 'package:hm_shop/components/Home/HmMoreList.dart';
 import 'package:hm_shop/components/Mine/HmGuess.dart';
+import 'package:hm_shop/stores/TokenManager.dart';
 import 'package:hm_shop/stores/UserController.dart';
 import 'package:hm_shop/viewmodels/home.dart';
 
@@ -16,7 +18,50 @@ class MineView extends StatefulWidget {
 }
 
 class _MineViewState extends State<MineView> {
-  final UserController _userController = Get.put(UserController()); //Get 共享数据 Put 
+  final UserController _userController = Get.find(); //Get 共享数据 Put
+
+  //返回退出登录的元素
+  Widget _getLogout() {
+    return _userController.user.value.id.isNotEmpty
+        ? Expanded(
+            child: GestureDetector(
+              onTap: () {
+                //弹出确认提示框
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("提示"),
+                      content: Text("确认退出登录吗"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("取消"),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            //清除getx  删除 token
+                            await tokenManager.removeToken(); //清除token
+                            _userController.updateUserInfo(
+                              //传入空字符串清除Getx
+                              UserInfo.fromJSON({}),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: Text("确认"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text("退出", textAlign: TextAlign.end),
+            ),
+          )
+        : Text("");
+  }
 
   Widget _buildHeader() {
     return Container(
@@ -30,14 +75,15 @@ class _MineViewState extends State<MineView> {
       padding: const EdgeInsets.only(left: 20, right: 40, top: 80, bottom: 20),
       child: Row(
         children: [
-          Obx((){
+          Obx(() {
             return CircleAvatar(
               radius: 26,
-              backgroundImage:_userController.user.value.id.isEmpty?NetworkImage(_userController.user.value.avatar) : const AssetImage('lib/assets/goods_avatar.png'),
+              backgroundImage: _userController.user.value.id.isNotEmpty
+                  ? NetworkImage(_userController.user.value.avatar)
+                  : const AssetImage('lib/assets/goods_avatar.png'),
               backgroundColor: Colors.white,
             );
           }),
-
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -47,7 +93,7 @@ class _MineViewState extends State<MineView> {
                   //OBX中必须得有可检测的响应式数据
                   return GestureDetector(
                     onTap: () {
-                      if(_userController.user.value.id.isEmpty){
+                      if (_userController.user.value.id.isEmpty) {
                         //当没有用户登录信息的时候可以去登录
                         Navigator.pushNamed(context, "/login");
                       }
@@ -55,7 +101,9 @@ class _MineViewState extends State<MineView> {
                     },
                     child: Text(
                       //当有登录信息时显示 无则显示立即登录 响应式变量
-                      _userController.user.value.id.isEmpty?_userController.user.value.account:'立即登录',//有登录信息 显示用户信息 否则显示立即登录
+                      _userController.user.value.id.isNotEmpty
+                          ? _userController.user.value.account
+                          : '立即登录', //有登录信息 显示用户信息 否则显示立即登录
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -66,6 +114,7 @@ class _MineViewState extends State<MineView> {
               ],
             ),
           ),
+          Obx(() => _getLogout()),
         ],
       ),
     );

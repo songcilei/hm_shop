@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hm_shop/api/user.dart';
+import 'package:hm_shop/stores/TokenManager.dart';
 import 'package:hm_shop/stores/UserController.dart';
+import 'package:hm_shop/utils/LoadingDialog.dart';
 import 'package:hm_shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,8 +15,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _phoneController = TextEditingController(); // 账号控制器
-  final TextEditingController _codeController = TextEditingController(); // 密码控制器
+  final TextEditingController _phoneController =
+      TextEditingController(); // 账号控制器
+  final TextEditingController _codeController =
+      TextEditingController(); // 密码控制器
 
   final UserController _userController = Get.find();
 
@@ -22,11 +26,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildPhoneTextField() {
     return TextFormField(
       validator: (value) {
-        if(value == null||value.isEmpty ){
+        if (value == null || value.isEmpty) {
           return "账号不能为空";
         }
         //校验手机号格式
-        if(!RegExp(r"^1[3-9]\d{9}$").hasMatch(value)){
+        if (!RegExp(r"^1[3-9]\d{9}$").hasMatch(value)) {
           return "手机号格式不正确";
         }
         return null;
@@ -49,11 +53,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildCodeTextField() {
     return TextFormField(
       validator: (value) {
-        if(value==null || value.isEmpty){
+        if (value == null || value.isEmpty) {
           return "密码不能为空";
         }
         //密码的校验 6-16位的数字 字母 或 下划线
-        if(!RegExp(r"^[a-zA-Z0-9_]{6,9}$").hasMatch(value)){
+        if (!RegExp(r"^[a-zA-Z0-9_]{6,9}$").hasMatch(value)) {
           return "密码格式不对";
         }
         return null;
@@ -73,20 +77,24 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _login()async{
+  Future<void> _login() async {
+    Loadingdialog.show(context, message: "努力登录中");
     //调用登录接口
-    try{
+    try {
       final res = await loginAPI({
-        "account":_phoneController.text,
-        "password":_codeController.text
+        "account": _phoneController.text,
+        "password": _codeController.text,
       });
-    //此时一定登陆成功
-    //http状态 2xx 业务状态码  业务执行成功
+      //此时一定登陆成功
+      //http状态 2xx 业务状态码  业务执行成功
       _userController.updateUserInfo(res);
+      tokenManager.setToken(res.token); //写入持久化
+
+      Loadingdialog.hide(context);
       ToastUtils.showToast(context, "登陆成功");
-      Navigator.pop(context);//返回上个页面
-    }
-    catch(e){
+      Navigator.pop(context); //返回上个页面
+    } catch (e) {
+      Loadingdialog.hide(context);
       ToastUtils.showToast(context, (e as DioException).message);
     }
   }
@@ -99,11 +107,13 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         onPressed: () {
           // 登录逻辑
-          if(_key.currentState!.validate()){//通过这里调用每个Texture form的校验功能 而不是特殊写的
-            if(_isChecked){//进行勾选框判断
-              //校验通过 
+          if (_key.currentState!.validate()) {
+            //通过这里调用每个Texture form的校验功能 而不是特殊写的
+            if (_isChecked) {
+              //进行勾选框判断
+              //校验通过
               _login();
-            }else{
+            } else {
               //请勾选用户协议
               ToastUtils.showToast(context, "请勾选用户协议");
             }
@@ -132,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
           checkColor: Colors.white,
           onChanged: (bool? value) {
             setState(() {
-              _isChecked = value??false;
+              _isChecked = value ?? false;
             });
           },
           // 设置形状
