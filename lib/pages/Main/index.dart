@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   final UserController _userController = Get.put(UserController());
-  _initUser() async {
+  Future<void> _initUser() async {
     await tokenManager.init();
     //获取token
     if (tokenManager.getToken().isNotEmpty) {

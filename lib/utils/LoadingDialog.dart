@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Loadingdialog {
   static void show(BuildContext context, {String message = "加载中.."}) {

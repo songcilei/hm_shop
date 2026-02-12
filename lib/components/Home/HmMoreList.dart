@@ -5,7 +5,7 @@ class HmMoreList extends StatefulWidget {
   // 推荐列表
   final List<GoodDetailItem> recommendList;
 
-  const HmMoreList({super.key,required this.recommendList});
+  const HmMoreList({super.key, required this.recommendList});
 
   @override
   _HmMoreListState createState() => _HmMoreListState();
@@ -39,7 +39,7 @@ class _HmMoreListState extends State<HmMoreList> {
               widget.recommendList[index].name!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.black, fontSize: 20),
+              style: TextStyle(color: Colors.black, fontSize: 15),
             ),
           ),
           SizedBox(height: 6),
@@ -86,7 +86,6 @@ class _HmMoreListState extends State<HmMoreList> {
     print(widget.recommendList.length);
     // 必须是Sliver家族的组件
     return SliverGrid.builder(
-      
       itemCount: widget.recommendList.length,
       gridDelegate:
           // 网格是两列

@@ -1,5 +1,4 @@
 //登录接口API
-import 'dart:io';
 
 import 'package:hm_shop/constants/index.dart';
 import 'package:hm_shop/utils/DioRequest.dart';

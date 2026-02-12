@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:hm_shop/api/mine.dart';
 // import 'package:get/get.dart';
